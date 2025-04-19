@@ -2,12 +2,12 @@
 
 import { useFormStatus } from "react-dom";
 
-interface FormButtonProps {
+interface ButtonProps {
     // loading: boolean;
     text: string;
   }
   
-  export default function FormButton({ text }: FormButtonProps) {
+  export default function Button({ text }: ButtonProps) {
     const { pending } = useFormStatus(); //this hook only can be used in child of form, that needs to be modified.
     return (
       <button
