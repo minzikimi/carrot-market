@@ -9,7 +9,9 @@ import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 export default function LogIn() {
     const [state, action] = useFormState(login, null);
-    
+    //userformstate  first is action we want to trigger , second initial state of useformstate hook
+
+
   return (
     <div  className="flex flex-col gap-10 py-8 px-6">
       <div className="flex flex-col gap-2 *:font-medium">
