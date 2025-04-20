@@ -25,8 +25,9 @@ interface ActionState {
     if (!prevState.token) {
       const result = phoneSchema.safeParse(phone);
       if (!result.success) {
+        console.log(result.error.flatten())
         return {
-          token: false,
+          token: false, 
           error: result.error.flatten(),
         };
       } else {
