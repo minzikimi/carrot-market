@@ -1,15 +1,11 @@
-
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
-
 
 model User {
   id         Int      @id @default(autoincrement())
@@ -21,4 +17,15 @@ model User {
   avatar     String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  SMSToken SMSToken[]
+}
+
+model SMSToken {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  token      String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
 }
