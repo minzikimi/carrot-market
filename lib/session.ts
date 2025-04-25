@@ -8,7 +8,7 @@ interface SessionContent {
 export default function getSession() {
   console.log(cookies( ))
   return getIronSession<SessionContent>(cookies(), {
-    cookieName: "delicious-karrot",
+    cookieName: "smaklig-morot",
     password: process.env.COOKIE_PASSWORD!,
   });
 }
