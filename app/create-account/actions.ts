@@ -13,38 +13,6 @@ function checkUserName(username:string){
   return !username.includes("tomato ")
 }
 
-
-const checkUniqueUsername = async (username: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      username,
-    },
-    select: {
-      id: true,
-    },
-  });
-  // if (user) {
-  //   return false;
-  // } else {
-  //   return true;
-  // }
-  return !Boolean(user);
-};
-
-const checkUniqueEmail = async (email: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      email,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return Boolean(user) === false;
-};
-
-
-
 const formSchema = z
   .object({
     username: z
@@ -52,44 +20,57 @@ const formSchema = z
         invalid_type_error: "Username must be a string!",
         required_error: "Where is my username???",
       })
-      // .min(3, "Way too short!!!")
-      // .max(10, "That is too looooong!")
       .trim()
       .toLowerCase()
-      // .transform((username) => `🔥 ${username}`)
+      .refine(checkUserName, "No potatoes allowed!"),
 
-      .refine(
-        checkUserName,
-        "No tomatoes allowed!"
-      )
-      .refine(checkUniqueUsername, "This username is already taken"),
-      
-      
-      email: z
-      .string()
-      .email()
-      .toLowerCase()
-      .refine(
-        checkUniqueEmail,
-        "There is an account already registered with that email."),
-      
-      
-      password: z
-      .string()
-      .min(PASSWORD_MIN_LENGTH),
-      // .regex(
-      //   PASSWORD_REGEX,
-      //   PASSWORD_REGEX_ERROR
-      // ),
-      confirm_password: z.string().min(PASSWORD_MIN_LENGTH),
+    email: z
+    .string()
+    .email()
+    .toLowerCase(),
+
+    password: z
+    .string()
+    .min(PASSWORD_MIN_LENGTH),
+
+    confirm_password: z.string().min(PASSWORD_MIN_LENGTH),
   })
-  .superRefine(({ password, confirm_password }, ctx) => {
+  .superRefine(async ({ username, email, password, confirm_password }, ctx) => {
+    const [existingUser, existingEmail] = await Promise.all([
+      db.user.findUnique({ 
+        where: { 
+          username
+         }, 
+         select: { 
+          id: true 
+        } }),
+      db.user.findUnique({ where: { email }, select: { id: true } }),
+    ]);
+
+    if (existingUser) {
+      ctx.addIssue({
+        code: "custom",
+        message: "This username is already taken",
+        path: ["username"],
+        fatal: true,
+      });
+    }
+
+    if (existingEmail) {
+      ctx.addIssue({
+        code: "custom",
+        message: "This email is already taken",
+        path: ["email"],
+        fatal: true,
+      });
+    }
+
     if (password !== confirm_password) {
       ctx.addIssue({
         code: "custom",
-        message: "Two passwords should be equal",
+        message: "Both passwords should be the same!",
         path: ["confirm_password"],
-      }); //move to outside of object 
+      });
     }
   });
 
