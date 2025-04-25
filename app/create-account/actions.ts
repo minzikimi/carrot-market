@@ -3,6 +3,9 @@ import { z } from "zod";
 import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX, PASSWORD_REGEX_ERROR } from "@/lib/constants";
 import db from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 
 
@@ -57,7 +60,7 @@ const formSchema = z
 
       .refine(
         checkUserName,
-        "No tom atoes allowed!"
+        "No tomatoes allowed!"
       )
       .refine(checkUniqueUsername, "This username is already taken"),
       
@@ -120,9 +123,15 @@ export async function createAccount(prevState: any, formData: FormData) {
     })
     console.log(user);
     // log the user in
+    const cookie = await getIronSession(cookies(),{
+      cookieName:"smaklig-morot",
+      password:process.env.COOKIE_PASSWORD!
+    });
+    //@ts-ignore
+    cookie.id = user.id
+    await cookie.save() 
     // redirect "/home"
-
-
+    redirect("/profile");
   }
 
 }
