@@ -13,4 +13,4 @@ export default function Loading() {
         ))}
       </div>
     );
-  }
+  }//replicate 10 loading boxes
