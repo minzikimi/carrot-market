@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
   };
  
  export async function middleware(request: NextRequest) {
-    console.log("hello");
+    // console.log("hello");
     const session = await getSession();
     const exists = publicOnlyUrls[request.nextUrl.pathname];
     if (!session.id) {
